@@ -4,21 +4,25 @@ declare(strict_types=1);
 
 namespace Park\Validator;
 
-use Park\Analyzer\CodeAnalyzer;
+use Park\Analyzer\AstCodeAnalyzer;
+use Park\Analyzer\CodeAnalyzerInterface;
+use Park\Scanner\FileScanner;
 
 class RuleValidator
 {
-    private CodeAnalyzer $analyzer;
+    private CodeAnalyzerInterface $analyzer;
+    private FileScanner $scanner;
 
-    public function __construct()
+    public function __construct(?CodeAnalyzerInterface $analyzer = null, ?FileScanner $scanner = null)
     {
-        $this->analyzer = new CodeAnalyzer();
+        $this->analyzer = $analyzer ?? new AstCodeAnalyzer();
+        $this->scanner = $scanner ?? new FileScanner();
     }
 
     public function validate(array $rules, string $directory = 'src'): array
     {
         $violations = [];
-        $dependencies = $this->analyzer->analyzeDependencies($directory);
+        $dependencies = $this->analyzeDependencies($directory);
 
         foreach ($rules as $rule) {
             $ruleViolations = $this->validateRule($rule, $dependencies);
@@ -26,6 +30,22 @@ class RuleValidator
         }
 
         return $violations;
+    }
+
+    private function analyzeDependencies(string $directory): array
+    {
+        $dependencies = [];
+        
+        foreach ($this->scanner->scanPhpFiles($directory) as $file) {
+            $content = $file->getContents();
+            $result = $this->analyzer->analyzeFile($content);
+            
+            if ($result['namespace']) {
+                $dependencies[$result['namespace']] = $result['dependencies'];
+            }
+        }
+        
+        return $dependencies;
     }
 
     private function validateRule(array $rule, array $dependencies): array

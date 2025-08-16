@@ -4,32 +4,17 @@ declare(strict_types=1);
 
 namespace Park\Analyzer;
 
-use Symfony\Component\Finder\Finder;
-
-class CodeAnalyzer
+class RegexCodeAnalyzer implements CodeAnalyzerInterface
 {
-    public function analyzeDependencies(string $directory = 'src'): array
+    public function analyzeFile(string $content): array
     {
-        $dependencies = [];
-        $finder = new Finder();
+        $namespace = $this->extractNamespace($content);
+        $dependencies = $this->extractUsedClasses($content);
         
-        if (!is_dir($directory)) {
-            return $dependencies;
-        }
-        
-        $finder->files()->name('*.php')->in($directory)->exclude(['vendor', 'tests']);
-        
-        foreach ($finder as $file) {
-            $content = $file->getContents();
-            $namespace = $this->extractNamespace($content);
-            
-            if ($namespace) {
-                $usedClasses = $this->extractUsedClasses($content);
-                $dependencies[$namespace] = $usedClasses;
-            }
-        }
-        
-        return $dependencies;
+        return [
+            'namespace' => $namespace,
+            'dependencies' => $dependencies
+        ];
     }
 
     private function extractNamespace(string $content): ?string
