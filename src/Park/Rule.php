@@ -7,6 +7,7 @@ namespace Park;
 class Rule
 {
     private string $module;
+    private array $exceptions = [];
 
     private function __construct(string $module)
     {
@@ -18,11 +19,18 @@ class Rule
         return new self($module);
     }
 
+    public function except(string|array $exceptions): self
+    {
+        $this->exceptions = is_array($exceptions) ? $exceptions : [$exceptions];
+        return $this;
+    }
+
     public function shouldNotBeUsedByAnyOtherModule(): array
     {
         return [
             'module' => $this->module,
-            'rule' => 'shouldNotBeUsedByAnyOtherModule'
+            'rule' => 'shouldNotBeUsedByAnyOtherModule',
+            'exceptions' => $this->exceptions
         ];
     }
 
@@ -31,7 +39,8 @@ class Rule
         return [
             'module' => $this->module,
             'rule' => 'shouldNotDependOn',
-            'dependency' => $dependency
+            'dependency' => $dependency,
+            'exceptions' => $this->exceptions
         ];
     }
 
@@ -40,7 +49,8 @@ class Rule
         return [
             'module' => $this->module,
             'rule' => 'canDependOn',
-            'dependency' => $dependency
+            'dependency' => $dependency,
+            'exceptions' => $this->exceptions
         ];
     }
 
@@ -49,7 +59,8 @@ class Rule
         return [
             'module' => $this->module,
             'rule' => 'shouldOnlyBeUsedBy',
-            'allowedModules' => $allowedModules
+            'allowedModules' => $allowedModules,
+            'exceptions' => $this->exceptions
         ];
     }
 }
