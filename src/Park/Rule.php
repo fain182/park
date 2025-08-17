@@ -63,4 +63,14 @@ class Rule
             'exceptions' => $this->exceptions
         ];
     }
+
+    public function canBeAccessedOnlyUsing(array $publicClasses): array
+    {
+        return [
+            'module' => $this->module,
+            'rule' => 'canBeAccessedOnlyUsing',
+            'publicClasses' => $publicClasses,
+            'exceptions' => $this->exceptions
+        ];
+    }
 }

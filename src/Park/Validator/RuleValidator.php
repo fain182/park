@@ -69,6 +69,10 @@ class RuleValidator
             case 'shouldOnlyBeUsedBy':
                 $violations = $this->validateShouldOnlyBeUsedBy($module, $rule['allowedModules'], $exceptions, $dependencies);
                 break;
+
+            case 'canBeAccessedOnlyUsing':
+                $violations = $this->validateCanBeAccessedOnlyUsing($module, $rule['publicClasses'], $exceptions, $dependencies);
+                break;
         }
 
         return $violations;
@@ -132,6 +136,45 @@ class RuleValidator
         }
 
         return $violations;
+    }
+
+    private function validateCanBeAccessedOnlyUsing(string $module, array $publicClasses, array $exceptions, array $dependencies): array
+    {
+        $violations = [];
+        
+        foreach ($dependencies as $from => $usedModules) {
+            foreach ($usedModules as $to) {
+                if ($this->isModuleOrSubmodule($to, $module) && !$this->isModuleOrSubmodule($from, $module)) {
+                    if ($this->isException($to, $exceptions)) {
+                        continue;
+                    }
+                    
+                    $isPublicApi = false;
+                    foreach ($publicClasses as $publicClass) {
+                        if ($this->matchesPattern($to, $publicClass)) {
+                            $isPublicApi = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!$isPublicApi) {
+                        $violations[] = "Module '{$from}' cannot access private class '{$to}' from module '{$module}' (violation: canBeAccessedOnlyUsing)";
+                    }
+                }
+            }
+        }
+
+        return $violations;
+    }
+
+    private function matchesPattern(string $class, string $pattern): bool
+    {
+        if (str_ends_with($pattern, '*')) {
+            $prefix = substr($pattern, 0, -1);
+            return str_starts_with($class, $prefix) || $class === rtrim($prefix, '\\');
+        }
+        
+        return $class === $pattern;
     }
 
     private function isModuleOrSubmodule(string $class, string $module): bool
