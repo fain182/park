@@ -151,22 +151,16 @@ class ExceptionsTest extends TestCase
             ->except(['App\Domain\Legacy\*', 'App\Domain\Migration\DataMigrator'])
             ->shouldNotDependOn('App\Infrastructure');
 
-        $this->assertEquals('App\Domain', $rule['module']);
-        $this->assertEquals('shouldNotDependOn', $rule['rule']);
-        $this->assertEquals('App\Infrastructure', $rule['dependency']);
-        $this->assertEquals(['App\Domain\Legacy\*', 'App\Domain\Migration\DataMigrator'], $rule['exceptions']);
+        $this->assertEquals('App\Domain', $rule->getModule());
+        $this->assertEquals('App\Infrastructure', $rule->getDependency());
+        $this->assertEquals(['App\Domain\Legacy\*', 'App\Domain\Migration\DataMigrator'], $rule->getExceptions());
     }
 
     private function validateWithMockDependencies(array $rules, array $mockDependencies): array
     {
-        // Use reflection to test the validation logic directly
-        $reflection = new \ReflectionClass($this->validator);
-        $method = $reflection->getMethod('validateRule');
-        $method->setAccessible(true);
-
         $violations = [];
         foreach ($rules as $rule) {
-            $ruleViolations = $method->invoke($this->validator, $rule, $mockDependencies);
+            $ruleViolations = $rule->validate($mockDependencies);
             $violations = array_merge($violations, $ruleViolations);
         }
 

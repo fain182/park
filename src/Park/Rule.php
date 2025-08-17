@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Park;
 
+use Park\Rules\CanBeAccessedOnlyUsingRule;
+use Park\Rules\CanDependOnRule;
+use Park\Rules\RuleInterface;
+use Park\Rules\ShouldNotBeUsedByAnyOtherModuleRule;
+use Park\Rules\ShouldNotDependOnRule;
+use Park\Rules\ShouldOnlyBeUsedByRule;
+
 class Rule
 {
     private string $module;
@@ -25,52 +32,28 @@ class Rule
         return $this;
     }
 
-    public function shouldNotBeUsedByAnyOtherModule(): array
+    public function shouldNotBeUsedByAnyOtherModule(): RuleInterface
     {
-        return [
-            'module' => $this->module,
-            'rule' => 'shouldNotBeUsedByAnyOtherModule',
-            'exceptions' => $this->exceptions
-        ];
+        return new ShouldNotBeUsedByAnyOtherModuleRule($this->module, $this->exceptions);
     }
 
-    public function shouldNotDependOn(string $dependency): array
+    public function shouldNotDependOn(string $dependency): RuleInterface
     {
-        return [
-            'module' => $this->module,
-            'rule' => 'shouldNotDependOn',
-            'dependency' => $dependency,
-            'exceptions' => $this->exceptions
-        ];
+        return new ShouldNotDependOnRule($this->module, $dependency, $this->exceptions);
     }
 
-    public function canDependOn(string $dependency): array
+    public function canDependOn(string $dependency): RuleInterface
     {
-        return [
-            'module' => $this->module,
-            'rule' => 'canDependOn',
-            'dependency' => $dependency,
-            'exceptions' => $this->exceptions
-        ];
+        return new CanDependOnRule($this->module, $dependency, $this->exceptions);
     }
 
-    public function shouldOnlyBeUsedBy(array $allowedModules): array
+    public function shouldOnlyBeUsedBy(array $allowedModules): RuleInterface
     {
-        return [
-            'module' => $this->module,
-            'rule' => 'shouldOnlyBeUsedBy',
-            'allowedModules' => $allowedModules,
-            'exceptions' => $this->exceptions
-        ];
+        return new ShouldOnlyBeUsedByRule($this->module, $allowedModules, $this->exceptions);
     }
 
-    public function canBeAccessedOnlyUsing(array $publicClasses): array
+    public function canBeAccessedOnlyUsing(array $publicClasses): RuleInterface
     {
-        return [
-            'module' => $this->module,
-            'rule' => 'canBeAccessedOnlyUsing',
-            'publicClasses' => $publicClasses,
-            'exceptions' => $this->exceptions
-        ];
+        return new CanBeAccessedOnlyUsingRule($this->module, $publicClasses, $this->exceptions);
     }
 }
