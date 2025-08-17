@@ -20,6 +20,7 @@ class RuleValidator
         $this->scanner = $scanner ?? new FileScanner();
     }
 
+    /** @param RuleInterface[] $rules */
     public function validate(array $rules, string $directory = 'src'): array
     {
         $violations = [];

@@ -5,18 +5,15 @@ declare(strict_types=1);
 namespace Park\Tests\Unit\Analyzer;
 
 use Park\Analyzer\AstCodeAnalyzer;
-use Park\Analyzer\RegexCodeAnalyzer;
 use PHPUnit\Framework\TestCase;
 
 class AstCodeAnalyzerTest extends TestCase
 {
     private AstCodeAnalyzer $analyzer;
-    private RegexCodeAnalyzer $regexAnalyzer;
 
     protected function setUp(): void
     {
         $this->analyzer = new AstCodeAnalyzer();
-        $this->regexAnalyzer = new RegexCodeAnalyzer();
     }
 
     public function testBasicUseStatements(): void
@@ -63,18 +60,13 @@ class UserService
     }
 }';
 
-        $astResult = $this->analyzer->analyzeFile($code);
-        $regexResult = $this->regexAnalyzer->analyzeFile($code);
+        $result = $this->analyzer->analyzeFile($code);
         
         // AST should ignore comments and strings
-        $this->assertContains('App\Domain\User', $astResult['dependencies']);
-        $this->assertNotContains('App\Fake\Comment', $astResult['dependencies']);
-        $this->assertNotContains('App\Fake\MultilineComment', $astResult['dependencies']);
-        $this->assertNotContains('App\Fake\StringContent', $astResult['dependencies']);
-        
-        // Regex might pick up false positives in comments
-        $this->assertContains('App\Domain\User', $regexResult['dependencies']);
-        // This demonstrates the superiority of AST - regex would pick up these false positives
+        $this->assertContains('App\Domain\User', $result['dependencies']);
+        $this->assertNotContains('App\Fake\Comment', $result['dependencies']);
+        $this->assertNotContains('App\Fake\MultilineComment', $result['dependencies']);
+        $this->assertNotContains('App\Fake\StringContent', $result['dependencies']);
     }
 
     public function testTypeHintsAndReturnTypes(): void
@@ -181,7 +173,7 @@ class UserService
         $this->assertContains('App\Config\AppConfig', $result['dependencies']);
     }
 
-    public function testComplexScenarioShowingAstSuperiority(): void
+    public function testComplexScenarioWithCommentsAndStrings(): void
     {
         $code = '<?php
 namespace App\Service;
@@ -208,22 +200,17 @@ class UserService extends /* use App\Fake\InlineComment; */ UserRepository
     }
 }';
 
-        $astResult = $this->analyzer->analyzeFile($code);
-        $regexResult = $this->regexAnalyzer->analyzeFile($code);
+        $result = $this->analyzer->analyzeFile($code);
         
         // AST correctly identifies real dependencies
-        $this->assertContains('App\Domain\User', $astResult['dependencies']);
-        $this->assertContains('App\Repository\UserRepository', $astResult['dependencies']);
+        $this->assertContains('App\Domain\User', $result['dependencies']);
+        $this->assertContains('App\Repository\UserRepository', $result['dependencies']);
         
         // AST ignores fake dependencies in comments and strings
-        $this->assertNotContains('App\Fake\CommentDependency', $astResult['dependencies']);
-        $this->assertNotContains('App\Fake\NewInComment', $astResult['dependencies']);
-        $this->assertNotContains('App\Fake\StringDependency', $astResult['dependencies']);
-        $this->assertNotContains('App\Fake\StringNew', $astResult['dependencies']);
-        
-        // Regex might pick up false positives (this shows AST superiority)
-        $this->assertContains('App\Domain\User', $regexResult['dependencies']);
-        $this->assertContains('App\Repository\UserRepository', $regexResult['dependencies']);
+        $this->assertNotContains('App\Fake\CommentDependency', $result['dependencies']);
+        $this->assertNotContains('App\Fake\NewInComment', $result['dependencies']);
+        $this->assertNotContains('App\Fake\StringDependency', $result['dependencies']);
+        $this->assertNotContains('App\Fake\StringNew', $result['dependencies']);
     }
 
     public function testHandlesInvalidPhp(): void

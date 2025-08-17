@@ -14,10 +14,6 @@ class CanBeAccessedOnlyUsingRule extends AbstractRule
         $this->publicClasses = $publicClasses;
     }
 
-    public function getPublicClasses(): array
-    {
-        return $this->publicClasses;
-    }
 
     public function validate(array $dependencies): array
     {

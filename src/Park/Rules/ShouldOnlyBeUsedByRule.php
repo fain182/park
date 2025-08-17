@@ -14,10 +14,6 @@ class ShouldOnlyBeUsedByRule extends AbstractRule
         $this->allowedModules = $allowedModules;
     }
 
-    public function getAllowedModules(): array
-    {
-        return $this->allowedModules;
-    }
 
     public function validate(array $dependencies): array
     {

@@ -14,10 +14,6 @@ class ShouldNotDependOnRule extends AbstractRule
         $this->dependency = $dependency;
     }
 
-    public function getDependency(): string
-    {
-        return $this->dependency;
-    }
 
     public function validate(array $dependencies): array
     {

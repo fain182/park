@@ -146,14 +146,25 @@ class ExceptionsTest extends TestCase
 
     public function testRuleBuilderSyntax(): void
     {
-        // Test that the builder syntax works correctly
+        // Test that the builder syntax creates a functional rule
         $rule = Rule::module('App\Domain')
             ->except(['App\Domain\Legacy\*', 'App\Domain\Migration\DataMigrator'])
             ->shouldNotDependOn('App\Infrastructure');
 
-        $this->assertEquals('App\Domain', $rule->getModule());
-        $this->assertEquals('App\Infrastructure', $rule->getDependency());
-        $this->assertEquals(['App\Domain\Legacy\*', 'App\Domain\Migration\DataMigrator'], $rule->getExceptions());
+        $mockDependencies = [
+            'App\Domain\User' => ['App\Infrastructure\Database'],
+            'App\Domain\Legacy\OldUser' => ['App\Infrastructure\Database'], // Should be excepted
+            'App\Domain\Migration\DataMigrator' => ['App\Infrastructure\Database'], // Should be excepted
+        ];
+
+        $violations = $rule->validate($mockDependencies);
+
+        // Should only violate for App\Domain\User (not the excepted classes)
+        $this->assertCount(1, $violations);
+        $this->assertStringContainsString('App\Domain\User', $violations[0]);
+        $this->assertStringContainsString('should not depend on', $violations[0]);
+        $this->assertStringNotContainsString('Legacy', $violations[0]);
+        $this->assertStringNotContainsString('Migration', $violations[0]);
     }
 
     private function validateWithMockDependencies(array $rules, array $mockDependencies): array

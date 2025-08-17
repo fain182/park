@@ -15,15 +15,6 @@ abstract class AbstractRule implements RuleInterface
         $this->exceptions = $exceptions;
     }
 
-    public function getModule(): string
-    {
-        return $this->module;
-    }
-
-    public function getExceptions(): array
-    {
-        return $this->exceptions;
-    }
 
     protected function isModuleOrSubmodule(string $class, string $module): bool
     {
