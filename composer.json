@@ -35,7 +35,7 @@
         "bin/park"
     ],
     "scripts": {
-        "test": "phpunit --configuration phpunit.xml",
+        "test": "phpunit",
         "analyse": "phpstan analyse src",
         "check": [
             "@test",
