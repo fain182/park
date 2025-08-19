@@ -81,17 +81,17 @@ Sometimes you need to allow specific classes to break the rules. Use the `except
 
 ```php
 Rule::module('App\Domain')
-    ->except('App\Domain\Legacy\*')  // Wildcard for all Legacy classes
+    ->except('App\Domain\Legacy')  // All Legacy namespace classes
     ->shouldNotDependOn('App\Infrastructure')
 ```
 
-You can specify exact classes or use wildcards:
+You can specify exact classes or namespace patterns:
 
 ```php
 Rule::module('App\Domain')
     ->except([
         'App\Domain\Legacy\OldUser',     // Exact class
-        'App\Domain\Migration\*'         // All migration classes
+        'App\Domain\Migration'           // All migration classes
     ])
     ->shouldNotDependOn('App\Infrastructure')
 ```

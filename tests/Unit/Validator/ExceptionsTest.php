@@ -31,7 +31,7 @@ class ExceptionsTest extends TestCase
 
         $rules = [
             Rule::module('App\Domain')
-                ->except('App\Domain\Legacy\*')
+                ->except('App\Domain\Legacy')
                 ->shouldNotDependOn('App\Infrastructure')
         ];
 
@@ -73,7 +73,7 @@ class ExceptionsTest extends TestCase
 
         $rules = [
             Rule::module('App\Domain')
-                ->except(['App\Domain\Legacy\*', 'App\Domain\Migration\DataMigrator'])
+                ->except(['App\Domain\Legacy', 'App\Domain\Migration\DataMigrator'])
                 ->shouldNotDependOn('App\Infrastructure')
         ];
 
@@ -93,7 +93,7 @@ class ExceptionsTest extends TestCase
 
         $rules = [
             Rule::module('Acme\Compliance')
-                ->except('Acme\Compliance\PublicApi\*')
+                ->except('Acme\Compliance\PublicApi')
                 ->shouldNotBeUsedByAnyOtherModule()
         ];
 
@@ -114,7 +114,7 @@ class ExceptionsTest extends TestCase
 
         $rules = [
             Rule::module('App\Security')
-                ->except('App\Security\PublicUtils\*')
+                ->except('App\Security\PublicUtils')
                 ->shouldOnlyBeUsedBy(['App\Controller'])
         ];
 
@@ -134,7 +134,7 @@ class ExceptionsTest extends TestCase
 
         $rules = [
             Rule::module('App\Domain')
-                ->except('App\Domain\NonExistent\*')
+                ->except('App\Domain\NonExistent')
                 ->shouldNotDependOn('App\Infrastructure')
         ];
 
@@ -148,7 +148,7 @@ class ExceptionsTest extends TestCase
     {
         // Test that the builder syntax creates a functional rule
         $rule = Rule::module('App\Domain')
-            ->except(['App\Domain\Legacy\*', 'App\Domain\Migration\DataMigrator'])
+            ->except(['App\Domain\Legacy', 'App\Domain\Migration\DataMigrator'])
             ->shouldNotDependOn('App\Infrastructure');
 
         $mockDependencies = [

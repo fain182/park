@@ -24,12 +24,7 @@ abstract class AbstractRule implements RuleInterface
     protected function isException(string $class, array $exceptions): bool
     {
         foreach ($exceptions as $exception) {
-            if (str_ends_with($exception, '*')) {
-                $pattern = substr($exception, 0, -1);
-                if (str_starts_with($class, $pattern) || $class === rtrim($pattern, '\\')) {
-                    return true;
-                }
-            } elseif ($class === $exception) {
+            if ($this->matchesPattern($class, $exception)) {
                 return true;
             }
         }
@@ -39,11 +34,7 @@ abstract class AbstractRule implements RuleInterface
 
     protected function matchesPattern(string $class, string $pattern): bool
     {
-        if (str_ends_with($pattern, '*')) {
-            $prefix = substr($pattern, 0, -1);
-            return str_starts_with($class, $prefix) || $class === rtrim($prefix, '\\');
-        }
-        
-        return $class === $pattern;
+        // Always treat as prefix match (namespace-like behavior)
+        return str_starts_with($class, $pattern . '\\') || $class === $pattern;
     }
 }

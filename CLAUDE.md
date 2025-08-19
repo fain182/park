@@ -46,7 +46,7 @@ composer check
 
 - **Rule System**: Fluent API for defining architectural constraints (`Rule::module()->shouldNotDependOn()`)
 - **AST Analysis**: Uses `nikic/php-parser` to accurately detect dependencies (use statements, type hints, inheritance, etc.)
-- **Exception Handling**: Supports exact class matches and wildcard patterns (`App\Legacy\*`)
+- **Exception Handling**: Supports exact class matches and namespace patterns (`App\Legacy`)
 - **Validation Engine**: Centralized logic in `RuleValidator` with method-specific validators
 
 ### Directory Structure
@@ -76,7 +76,7 @@ Rules are defined in `park.config.php`:
 ```php
 return [
     Rule::module('App\Domain')
-        ->except('App\Domain\Legacy\*')
+        ->except('App\Domain\Legacy')
         ->shouldNotDependOn('App\Infrastructure'),
 ];
 ```
@@ -89,8 +89,8 @@ return [
 
 ### Exception Pattern Matching
 The `isException()` method in `RuleValidator` handles:
-- Exact matches: `App\Domain\User`
-- Wildcards: `App\Domain\Legacy\*` (matches `App\Domain\Legacy` and `App\Domain\Legacy\*`)
+- Exact matches: `App\Domain\User` (matches only that specific class)
+- Namespace patterns: `App\Domain\Legacy` (matches `App\Domain\Legacy` and all classes starting with `App\Domain\Legacy\`)
 
 ### Dependency Detection
 AST analyzer detects dependencies through:
