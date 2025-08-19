@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Park;
 
 use Park\Command\ValidateCommand;
+use Park\Command\DiffCommand;
 use Symfony\Component\Console\Application as BaseApplication;
 
 class Application extends BaseApplication
@@ -14,6 +15,7 @@ class Application extends BaseApplication
         parent::__construct('Park', '1.0.0');
         
         $this->add(new ValidateCommand());
-        $this->setDefaultCommand('validate', true);
+        $this->add(new DiffCommand());
+        $this->setDefaultCommand('validate');
     }
 }

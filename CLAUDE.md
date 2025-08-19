@@ -27,6 +27,11 @@ composer check
 # Run the tool locally
 ./bin/park src
 ./bin/park tests/EndToEnd/fixtures/shouldNotDependOn
+
+# Compare violations with base branch (useful for CI/PR validation)
+./bin/park diff src                    # Compare with main branch
+./bin/park diff --base=develop         # Compare with develop branch
+./bin/park diff --base=main tests/     # Compare specific directory
 ```
 
 ## Core Architecture
@@ -109,3 +114,39 @@ AST analyzer detects dependencies through:
 
 ### Testing Changes
 Always run the full test suite before commits. The project has 26 tests with 76 assertions covering all major functionality and edge cases.
+
+## Gradual Enforcement
+
+### Diff Command
+The `diff` command enables gradual enforcement by comparing violations between branches, making it ideal for CI/PR validation on existing codebases with legacy violations.
+
+**Usage:**
+```bash
+./bin/park diff [directory] [--base=branch]
+```
+
+**How it works:**
+1. Analyzes violations in current working directory
+2. Switches to base branch and analyzes violations there  
+3. Compares the two sets and shows differences
+4. Returns success (0) if no new violations, failure (1) if new violations found
+
+**Output format:**
+```
+📊 Violation Diff vs main branch
+
+➕ New violations (2):
+  src/Domain/User.php → App\Domain\User depends on App\Infrastructure\Database
+  src/Service/Email.php → App\Service\Email depends on App\Infrastructure\Queue
+
+➖ Fixed violations (1):
+  src/Domain/Order.php → App\Domain\Order depends on App\Infrastructure\Logger
+
+⚠️  CI Status: FAILED (new violations detected)
+```
+
+**CI Integration:**
+Perfect for GitHub Actions/CI where you want to block PRs that introduce new violations while allowing existing technical debt to be addressed gradually.
+
+**Git Safety:**
+The command safely stashes uncommitted changes, switches branches for analysis, then restores the original state automatically.

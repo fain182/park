@@ -31,4 +31,9 @@ class Violation
     {
         return $this->to;
     }
+    
+    public function __toString(): string
+    {
+        return $this->message;
+    }
 }

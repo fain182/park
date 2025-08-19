@@ -106,21 +106,63 @@ Rule::module('App\Domain')
 ./vendor/bin/park src/MyModule    # Analyzes specific directory
 ```
 
+### Gradual Enforcement (Diff Mode)
+
+For existing projects with legacy violations, use the `diff` command to only block **new** violations:
+
+```bash
+./vendor/bin/park diff src        # Compare with main branch
+./vendor/bin/park diff --base=develop  # Compare with develop branch
+```
+
+The diff command:
+1. Analyzes violations in your current branch
+2. Switches to the base branch and analyzes violations there
+3. Shows only the **differences** between branches
+4. Returns success if no new violations, failure if new violations found
+
+**Example output:**
+```
+📊 Violation Diff vs main branch
+
+➕ New violations (2):
+  src/Domain/User.php → App\Domain\User depends on App\Infrastructure\Database
+  src/Service/Email.php → App\Service\Email depends on App\Infrastructure\Queue
+
+➖ Fixed violations (1):
+  src/Domain/Order.php → App\Domain\Order depends on App\Infrastructure\Logger
+
+⚠️  CI Status: FAILED (new violations detected)
+```
+
+This approach allows you to:
+- **Introduce Park gradually** on existing codebases
+- **Block new violations** without requiring immediate fixes for existing ones
+- **Track progress** by seeing fixed violations over time
+
 ### In CI/CD
 
 Park is designed to run in CI environments. Add it to your pipeline:
 
+**Full validation** (fails on any violation):
 ```yaml
 # GitHub Actions example
 - name: Validate Architecture
   run: ./vendor/bin/park src
 ```
 
+**Gradual enforcement** (fails only on new violations):
+```yaml
+# GitHub Actions example - perfect for existing projects
+- name: Check Architecture Diff
+  run: ./vendor/bin/park diff src --base=main
+```
+
 ```yaml
 # GitLab CI example
 validate_architecture:
   script:
-    - ./vendor/bin/park src
+    - ./vendor/bin/park diff src --base=main
 ```
 
 If violations are found, Park exits with code 1, failing the build.
