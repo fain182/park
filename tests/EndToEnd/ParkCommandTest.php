@@ -20,7 +20,7 @@ class ParkCommandTest extends TestCase
     {
         $testDir = __DIR__ . '/fixtures/allRulesSatisfied';
         
-        $process = new Process(['php', $this->binPath, 'src'], $testDir);
+        $process = new Process(['php', $this->binPath, 'validate', 'src'], $testDir);
         $process->run();
 
         $this->assertEquals(0, $process->getExitCode());
@@ -31,7 +31,7 @@ class ParkCommandTest extends TestCase
     {
         $testDir = __DIR__ . '/fixtures/missingConfig';
         
-        $process = new Process(['php', $this->binPath, 'src'], $testDir);
+        $process = new Process(['php', $this->binPath, 'validate', 'src'], $testDir);
         $process->run();
 
         $this->assertEquals(1, $process->getExitCode());
@@ -40,7 +40,7 @@ class ParkCommandTest extends TestCase
 
     public function testMissingDirectory(): void
     {
-        $process = new Process(['php', $this->binPath, 'nonexistent']);
+        $process = new Process(['php', $this->binPath, 'validate', 'nonexistent']);
         $process->run();
 
         $this->assertEquals(1, $process->getExitCode());

@@ -25,8 +25,8 @@ vendor/bin/phpstan
 composer check
 
 # Run the tool locally
-./bin/park src
-./bin/park tests/EndToEnd/fixtures/shouldNotDependOn
+./bin/park validate src
+./bin/park validate tests/EndToEnd/fixtures/shouldNotDependOn
 
 # Compare violations with base branch (useful for CI/PR validation)
 ./bin/park diff src                    # Compare with main branch

@@ -16,6 +16,5 @@ class Application extends BaseApplication
         
         $this->add(new ValidateCommand());
         $this->add(new DiffCommand());
-        $this->setDefaultCommand('validate');
     }
 }

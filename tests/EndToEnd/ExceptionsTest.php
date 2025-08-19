@@ -20,7 +20,7 @@ class ExceptionsTest extends TestCase
     {
         $testDir = __DIR__ . '/fixtures/exceptionsTest';
         
-        $process = new Process(['php', $this->binPath, 'src'], $testDir);
+        $process = new Process(['php', $this->binPath, 'validate', 'src'], $testDir);
         $process->run();
 
         // Should find violation for User but not for Legacy\OldUser

@@ -13,7 +13,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class ValidateCommand extends Command
 {
-    protected static $defaultName = 'validate';
+    protected static $defaultName = null;
     
     protected function configure(): void
     {

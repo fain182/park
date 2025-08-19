@@ -43,8 +43,7 @@ class ArchitectureAnalysis
             $ruleViolations = $rule->validate($dependencies);
             
             foreach ($ruleViolations as $message) {
-                // Extract from/to from message - this is temporary until we refactor rules
-                $violation = new Violation('', '', $message);
+                $violation = new Violation($message);
                 $violations->add($violation);
             }
         }

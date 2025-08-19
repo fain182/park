@@ -34,7 +34,7 @@ return [
 2. **Run the validation**:
 
 ```bash
-./vendor/bin/park src
+./vendor/bin/park validate src
 ```
 
 If there are violations, Park will exit with status code 1 and display the issues:
@@ -101,9 +101,9 @@ Rule::module('App\Domain')
 ### Basic usage
 
 ```bash
-./vendor/bin/park                 # Analyzes 'src' directory
-./vendor/bin/park app             # Analyzes 'app' directory
-./vendor/bin/park src/MyModule    # Analyzes specific directory
+./vendor/bin/park validate        # Analyzes 'src' directory
+./vendor/bin/park validate app    # Analyzes 'app' directory
+./vendor/bin/park validate src/MyModule  # Analyzes specific directory
 ```
 
 ### Gradual Enforcement (Diff Mode)
@@ -148,7 +148,7 @@ Park is designed to run in CI environments. Add it to your pipeline:
 ```yaml
 # GitHub Actions example
 - name: Validate Architecture
-  run: ./vendor/bin/park src
+  run: ./vendor/bin/park validate src
 ```
 
 **Gradual enforcement** (fails only on new violations):

@@ -20,7 +20,7 @@ class ShouldNotDependOnTest extends TestCase
     {
         $testDir = __DIR__ . '/fixtures/shouldNotDependOn/violation';
         
-        $process = new Process(['php', $this->binPath, 'src'], $testDir);
+        $process = new Process(['php', $this->binPath, 'validate', 'src'], $testDir);
         $process->run();
 
         $this->assertEquals(1, $process->getExitCode());
@@ -33,7 +33,7 @@ class ShouldNotDependOnTest extends TestCase
     {
         $testDir = __DIR__ . '/fixtures/shouldNotDependOn/success';
         
-        $process = new Process(['php', $this->binPath, 'src'], $testDir);
+        $process = new Process(['php', $this->binPath, 'validate', 'src'], $testDir);
         $process->run();
 
         $this->assertEquals(0, $process->getExitCode());
